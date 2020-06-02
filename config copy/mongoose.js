@@ -1,11 +1,14 @@
 const mongoose = require('mongoose');
-const {mongo_atlas} = require('./keys.js');
-const mongo_URI = process.env.NODE_ENV === 'production'? mongo_atlas : 'mongodb://localhost:27017/play-games'
-mongoose.connect(mongo_URI,{
+
+const mongo_URI = process.env.NODE_ENV === 'production' ?
+//ToDo: changes to your own variables
+    'mongodb + srv ://your Atlas server or whatever'
+    : 'mongodb://localhost:27017/your-mongoDB'
+mongoose.connect(mongo_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useCreateIndex: true,
     useFindAndModify: false
 })
-.then(()=>console.log('Successfully conected to MongoDB'))
-.catch(console.error)
+    .then(() => console.log('Successfully conected to MongoDB'))
+    .catch(console.error)

@@ -1,19 +1,8 @@
 const User = require('../models/User.js');
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const { jwt_auth_secret, front_url } = require('../config/keys');
-const transporter = require('../config/nodemailer');
-const FRONT_URI = process.env.NODE_ENV === 'production' ? front_url : 'http://localhost:3000'
 
-
-const UserController = {
-    getAll(req, res) {
-        User.find()
-            // .populate('followers')
-            // .populate('following')
-            .then(users => res.send({ users }))
-            .catch(console.error)
-    },
+const CheckerController = {
+    //Sería iniciar la partida. Tiene que tener token para que no se pueda acceder a ellos desde el postman
     async register(req, res) {
         try {
             req.body.password = await bcrypt.hash(req.body.password, 9)
@@ -30,6 +19,51 @@ const UserController = {
             })
         }
     },
+    async login(req, res) {
+        try {
+            const user = await User.findOne({
+                email: req.body.email
+            });
+            if (!user) {
+                return res.status(400).send({
+                    message: 'Email o contraseña incorrectos'
+                })
+            }
+            const isMatch = bcrypt.compare(req.body.password, user.password);
+            if (!isMatch) {
+                return res.status(400).send({
+                    message: 'Email o contraseña incorrectos'
+                })
+            }
+            const token = jwt.sign({ _id: user._id }, jwt_auth_secret);
+            if (user.tokens.length > 4) { user.tokens.shift() }
+            user.tokens.push(token);
+            await user.replaceOne(user);
+            res.send({
+                user,
+                token,
+                message: 'Conectado con éxito'
+            })
+        } catch (error) {
+            console.error(error)
+            res.status(500).send({
+                message: 'Hubo un problema al intentar conectar al usuario'
+            })
+        }
+    },
+    logout(req, res) {
+        User.findByIdAndUpdate(req.user._id, { $pull: { tokens: req.headers.authorization } })
+            .then(() => res.send({ message: 'Desconectado con éxito' }))
+            .catch(error => {
+                console.error(error)
+                res.status(500).send({
+                    message: 'Hubo un problema al intentar conectar al usuario'
+                })
+            })
+    },
+
+
+
     async getMyInfo(req, res) {
         try {
             const user = await User.findById(req.user._id)
@@ -101,48 +135,6 @@ const UserController = {
     //         })
     //     }
     // },
-    async login(req, res) {
-        try {
-            const user = await User.findOne({
-                email: req.body.email
-            });
-            if (!user) {
-                return res.status(400).send({
-                    message: 'Email o contraseña incorrectos'
-                })
-            }
-            const isMatch = bcrypt.compare(req.body.password, user.password);
-            if (!isMatch) {
-                return res.status(400).send({
-                    message: 'Email o contraseña incorrectos'
-                })
-            }
-            const token = jwt.sign({ _id: user._id }, jwt_auth_secret);
-            if (user.tokens.length > 4) { user.tokens.shift() };
-            user.tokens.push(token);
-            await user.replaceOne(user);
-            res.send({
-                user,
-                token,
-                message: 'Conectado con éxito'
-            })
-        } catch (error) {
-            console.error(error)
-            res.status(500).send({
-                message: 'Hubo un problema al intentar conectar al usuario'
-            })
-        }
-    },
-    logout(req, res) {
-        User.findByIdAndUpdate(req.user._id, { $pull: { tokens: req.headers.authorization } })
-            .then(() => res.send({ message: 'Desconectado con éxito' }))
-            .catch(error => {
-                console.error(error)
-                res.status(500).send({
-                    message: 'Hubo un problema al intentar conectar al usuario'
-                })
-            })
-    },
     async uploadImage(req, res) {
         try {
             const user = await User.findByIdAndUpdate(req.user._id, { image: req.file.filename }, { new: true });
@@ -222,15 +214,15 @@ const UserController = {
         } catch (error) {
             res.status(500).send({ message: "Problemas al obtener la contraseña", error })
         }
-    },
-    async getPassword(req, res) {
-        try {
-            const user = await User.findById(req.user._id).lean()
-            res.send(user.password)
-        } catch (error) {
-            res.status(500).send({ message: "Problemas al obtener la contraseña", error })
-        }
     }
+    // async getPassword(req, res) {
+    //     try {
+    //         const user = await User.findById(req.user._id).lean()
+    //         res.send(user.password)
+    //     } catch (error) {
+    //         res.status(500).send({ message: "Problemas al obtener la contraseña", error })
+    //     }
+    // }
 
 }
-module.exports = UserController;
+module.exports = CheckerController;
