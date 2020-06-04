@@ -3,7 +3,7 @@ const express = require('express');
 const app = express();
 const morgan = require('morgan');
 const PORT = process.env.PORT || 3001;
-const checkersRouter = require('./routes/checkers');
+const checkersRouter = require('./routes/checker');
 
 app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");

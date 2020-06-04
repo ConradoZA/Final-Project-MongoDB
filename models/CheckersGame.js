@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const ObjectId = mongoose.Schema.Types.ObjectId;
 const CheckersGameSchema = new mongoose.Schema({
     playerOne: {
         type: String,
@@ -8,31 +9,24 @@ const CheckersGameSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    turn: {
-        type: Number,
+    initiated: {
+        type: Boolean,
         required: true
     },
-    past: {
-        type: [[Array]],
-        required: true
-    },
-    present: {
-        type: [[]],
-        required: true
-    },
-    future: {
-        type: [[]],
-        required: true
-    },
-    whitePCaptured: Number,
-    blackPCaptured: Number,
-    winner: String
+    winner: String,
+    drawOffered:Boolean,
+    gamePlay:{
+        type:ObjectId,
+        ref:"CheckersPlay"
+    }
+}, {
+    timestamps: true
 });
-CheckersGameSchema.methods.toJSON = function (params) {
-    const game = this._doc;
-    delete game._id;
-    delete game.__v;
-    return game;
-}
-const Checkers = mongoose.model('CheckersGame', CheckersGameSchema);
-module.exports = Checkers;
+// CheckersGameSchema.methods.toJSON = function (params) {
+//     const game = this._doc;
+//     delete game._id;
+//     delete game.__v;
+//     return game;
+// }
+const CheckersGame = mongoose.model('CheckersGame', CheckersGameSchema);
+module.exports = CheckersGame;
