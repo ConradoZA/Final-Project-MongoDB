@@ -3,7 +3,8 @@ const express = require('express');
 const app = express();
 const morgan = require('morgan');
 const PORT = process.env.PORT || 3001;
-const checkersRouter = require('./routes/checker');
+const gamesRouter = require('./routes/game');
+const playsRouter = require('./routes/play');
 
 app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
@@ -16,6 +17,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.options('/*', (req, res) => res.send());
 
-app.use('/games/checkers', checkersRouter);
+app.use('/checkers/games', gamesRouter);
+app.use('/checkers/plays', playsRouter);
 
 app.listen(PORT, () => console.log('server running on port: ' + PORT));
