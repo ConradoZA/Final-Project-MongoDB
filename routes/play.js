@@ -3,6 +3,6 @@ const CheckerPlayController = require("../controllers/CheckerPlayController.js")
 
 router.get("/get=:id", CheckerPlayController.getPlay);
 router.get("/start", CheckerPlayController.initialize);
-router.put("/new-move", CheckerPlayController.newMove);
+router.put("/new-turn", CheckerPlayController.newTurn);
 
 module.exports = router;

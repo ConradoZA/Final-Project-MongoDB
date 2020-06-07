@@ -15,9 +15,8 @@ const CheckerPlayController = {
 	},
 	async initialize(req, res) {
 		try {
-			console.log(req.body);
 			const initial = {
-				turn: 0,
+				turn: 1,
 				past: [
 					[9, 9, "bp", 99],
 					[7, 9, "bp", 97],
@@ -66,7 +65,8 @@ const CheckerPlayController = {
 				captureTimer: 0,
 			};
 			const turnZero = await CheckersPlay.create(initial);
-			res.send(turnZero);
+			// res.send(turnZero);
+			return turnZero;
 		} catch (error) {
 			console.error(error);
 			res.status(500).send({
@@ -75,17 +75,17 @@ const CheckerPlayController = {
 			});
 		}
 	},
-	async newMove(req, res) {
+	async newTurn(req, res) {
 		try {
 			const oldPlay = await CheckersPlay.findById(req.body.id);
-			past = oldPlay.past.push(oldPlay.present);
-			turn = req.body;
-			const newPlay = await CheckersPlay.findByIdAndUpdate(
-				req.body.id,
-				{ past, turn },
-				{ new: true }
-			);
-			res.send(newPlay);
+			const past = oldPlay.past;
+			past.push(oldPlay.present);
+			const newPlay = { ...req.body, ...past };
+			console.log(newPlay);
+			const newTurn = await CheckersPlay.findByIdAndUpdate(req.body.id, newPlay, {
+				new: true,
+			});
+			res.send(newTurn);
 		} catch (error) {
 			console.error(error);
 			res.status(500).send({

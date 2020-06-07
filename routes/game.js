@@ -2,7 +2,9 @@ const router = require("express").Router();
 const CheckerGameController = require("../controllers/CheckerGameController.js");
 
 router.post("/invitation", CheckerGameController.sendNewGameInvitation);
-router.post("/accept", CheckerGameController.acceptNewGame);
+router.put("/answer", CheckerGameController.answerInvitation);
 router.get("/get=:id", CheckerGameController.getGame);
+router.get("/getAll=:username", CheckerGameController.getAll);
+router.put("/draw-offered",CheckerGameController.drawOffered);
 
 module.exports = router;
