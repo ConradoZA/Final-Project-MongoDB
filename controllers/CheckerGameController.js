@@ -8,6 +8,8 @@ const CheckerGameController = {
 				playerOne: req.body.playerOne,
 				playerTwo: req.body.playerTwo,
 				initiated: false,
+				winner:"",
+				drawOffered:false,
 			};
 			const invite = await CheckersGame.create(newGame);
 			res.status(201).send({
@@ -24,7 +26,6 @@ const CheckerGameController = {
 	},
 	async answerInvitation(req, res) {
 		try {
-			console.log("dentro");
 			if (req.body.answer === "yes") {
 				const play = await plays.initialize();
 				const game = await CheckersGame.findByIdAndUpdate(
