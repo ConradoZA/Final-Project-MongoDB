@@ -8,6 +8,8 @@ const CheckerGameController = {
 				playerOne: req.body.playerOne,
 				playerTwo: req.body.playerTwo,
 				initiated: false,
+				winner: "",
+				drawOffered: false,
 			};
 			const invite = await CheckersGame.create(newGame);
 			res.status(201).send({
@@ -24,7 +26,6 @@ const CheckerGameController = {
 	},
 	async answerInvitation(req, res) {
 		try {
-			console.log("dentro");
 			if (req.body.answer === "yes") {
 				const play = await plays.initialize();
 				const game = await CheckersGame.findByIdAndUpdate(
@@ -93,8 +94,8 @@ const CheckerGameController = {
 	},
 	async drawAccepted(req, res) {
 		try {
-			const draw = await CheckersGame.findOneAndUpdate(
-				{ gamePlay: req.body.playId },
+			const draw = await CheckersGame.findByIdAndUpdate(
+				req.body.gameId,
 				{ winner: "draw" },
 				{ new: true }
 			);
@@ -103,6 +104,54 @@ const CheckerGameController = {
 			console.error(error);
 			res.status(500).send({
 				message: "Hubo un problema al enviar la oferta",
+				error,
+			});
+		}
+	},
+	async drawRejected(req, res) {
+		try {
+			const draw = await CheckersGame.findByIdAndUpdate(
+				req.body.gameId,
+				{ drawOffered: false },
+				{ new: true }
+			);
+			res.send(draw);
+		} catch (error) {
+			console.error(error);
+			res.status(500).send({
+				message: "Hubo un problema al enviar la oferta",
+				error,
+			});
+		}
+	},
+	async surrenderGame(req, res) {
+		try {
+			const lose = await CheckersGame.findOneAndUpdate(
+				{ gamePlay: req.body.playId },
+				{ winner: req.body.winner },
+				{ new: true }
+			);
+			res.send(lose);
+		} catch (error) {
+			console.error(error);
+			res.status(500).send({
+				message: "Hubo un problema al enviar la rendición",
+				error,
+			});
+		}
+	},
+	async finishGame(req, res) {
+		try {
+			const ended = await CheckersGame.findByIdAndUpdate(
+				req.body.gameId,
+				{ winner: req.body.winner },
+				{ new: true }
+			);
+			res.send(ended);
+		} catch (error) {
+			console.error(error);
+			res.status(500).send({
+				message: "Hubo un problema al cerrar la partida",
 				error,
 			});
 		}

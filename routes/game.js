@@ -6,5 +6,9 @@ router.put("/answer", CheckerGameController.answerInvitation);
 router.get("/get=:id", CheckerGameController.getGame);
 router.get("/getAll=:username", CheckerGameController.getAll);
 router.put("/draw-offered",CheckerGameController.drawOffered);
+router.put("/draw-accepted",CheckerGameController.drawAccepted);
+router.put("/draw-rejected",CheckerGameController.drawRejected);
+router.put("/surrender",CheckerGameController.surrenderGame);
+router.put("/game-finished",CheckerGameController.finishGame);
 
 module.exports = router;
