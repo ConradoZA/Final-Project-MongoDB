@@ -1,7 +1,6 @@
 require('./config/mongoose.js');
 const express = require('express');
 const app = express();
-const morgan = require('morgan');
 const PORT = process.env.PORT || 3001;
 const gamesRouter = require('./routes/game');
 const playsRouter = require('./routes/play');
