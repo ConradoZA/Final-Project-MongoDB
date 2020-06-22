@@ -156,5 +156,66 @@ const CheckerGameController = {
 			});
 		}
 	},
+	async updateUserName(req, res) {
+		try {
+			const oldName = req.body.oldUser;
+			const newName = req.body.user.name;
+			if (oldName !== newName) {
+				const asPlayerOne = await CheckersGame.find({
+					playerOne: oldName,
+				});
+				const asPlayerTwo = await CheckersGame.find({
+					playerTwo: oldName,
+				});
+				for (let i = 0; i < asPlayerOne.length; i++) {
+					const game = asPlayerOne[i];
+					await CheckersGame.findByIdAndUpdate(game._id, { playerOne: newName });
+				}
+				for (let j = 0; j < asPlayerTwo.length; j++) {
+					const game = asPlayerTwo[j];
+					await CheckersGame.findByIdAndUpdate(game._id, { playerTwo: newName });
+				}
+			}
+			res.send("done");
+		} catch (error) {
+			res.status(500).send({
+				message: "Hubo un problema al cambiar los nombres",
+				error,
+			});
+		}
+	},
+	async handleDelete(req, res) {
+		try {
+			const username = req.body.username;
+			const asPlayerOne = await CheckersGame.find({
+				playerOne: username,
+			});
+			const asPlayerTwo = await CheckersGame.find({
+				playerTwo: username,
+			});
+			for (let i = 0; i < asPlayerOne.length; i++) {
+				const game = asPlayerOne[i];
+				if (!game.initiated) {
+					await CheckersGame.findByIdAndDelete(game._id);
+				} else {
+					await CheckersGame.findByIdAndUpdate(game._id, { winner: game.playerTwo });
+				}
+			}
+			for (let j = 0; j < asPlayerTwo.length; j++) {
+				const game = asPlayerTwo[j];
+				if (!game.initiated) {
+					await CheckersGame.findByIdAndDelete(game._id);
+				} else {
+					await CheckersGame.findByIdAndUpdate(game._id, { winner: game.playerOne });
+				}
+			}
+			res.send("done");
+		} catch (error) {
+			res.status(500).send({
+				message: "Hubo un problema al eliminar las partidas de ese usuario",
+				error,
+			});
+		}
+	},
 };
 module.exports = CheckerGameController;

@@ -10,5 +10,7 @@ router.put("/draw-accepted",CheckerGameController.drawAccepted);
 router.put("/draw-rejected",CheckerGameController.drawRejected);
 router.put("/surrender",CheckerGameController.surrenderGame);
 router.put("/game-finished",CheckerGameController.finishGame);
+router.put("/update-name",CheckerGameController.updateUserName);
+router.put("/delete-user", CheckerGameController.handleDelete);
 
 module.exports = router;
