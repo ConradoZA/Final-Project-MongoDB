@@ -66,9 +66,9 @@ const CheckerGameController = {
 			const asPlayerTwo = await CheckersGame.find({
 				playerTwo: req.params.username,
 			}).populate("gamePlay");
-			const all = asPlayerOne.concat(asPlayerTwo).sort((a, b) => {
-				return b.gamePlay?.updatedAt - a.gamePlay?.updatedAt;
-			});
+			const all = asPlayerOne
+				.concat(asPlayerTwo)
+				.sort((a, b) => b.gamePlay?.updatedAt - a.gamePlay?.updatedAt);
 			res.send(all);
 		} catch (error) {
 			console.error(error);
