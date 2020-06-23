@@ -67,12 +67,11 @@ const CheckerGameController = {
 				playerTwo: req.params.username,
 			}).populate("gamePlay");
 			const all = asPlayerOne.concat(asPlayerTwo);
-			console.log(all);
 			all.sort((a, b) => {
 				if (b.gamePlay && a.gamePlay) {
 					return b.gamePlay["updatedAt"] - a.gamePlay["updatedAt"];
 				} else {
-					return b.updatedAt - a.updatedAt;
+					return a.updatedAt - b.updatedAt;
 				}
 			});
 			res.send(all);
